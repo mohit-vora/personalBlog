@@ -1,0 +1,66 @@
+---
+title: "Automated Visual Tests journey"
+date: 2020-04-12
+tags:
+  - Test Automation
+slug: "/automated-visual-tests-journey"
+---
+#### February 2019
+
+It all started with a 24 hour Hackathon. I partnered with few colleagues at <a href="https://www.springboard.com">Springboard</a> to setup a hacky visual test POC for landing page. With very little knowledge of a vast landscape, we tried <a href="https://www.applitools.com.">Applitools</a> and <a href="https://www.percy.io/">Percy</a>. We faced technical challenges with setting up Applitools, lack of time. We were able to spin up a Percy setup quickly. Although not at all production-ready, but it worked. People loved it. We won that hackathon. 
+
+I was fascinated. Really? Can there ever be a mature automated visual test setup? How cool it would be to run fast pixel comparisons automatically just like we run unit tests, Sonarcloud checks. I kept thinking about it, discussing naively/hypothetically with folks around.
+
+#### July 2019
+
+I re-did a working example with <a href="https://www.applitools.com">Applitools</a>, <a href="https://www.percy.io">Percy</a> and skimmed over examples of other open source tools from <a href="https://github.com/mojoaxel/awesome-regression-testing">this</a> extensive list. 
+
+It was possible to get something good going with open source tools. But it comes with additional maintenance. We didn't have that many QA resources as a startup. So open-source tooling was opted out of the decision process :(
+
+I discussed this with CTO. He shared this business insight:
+
+> Paying a premium for paid services is not a bad idea for startups. Time saved for maintaining and supporting immature open source solutions is much more worth than paying a premium for paid solutions.
+
+This corrected my naive thought of open-source is always a better choice between Proprietary and Open-source. 
+
+Back on track again, now I have to choose between Applitools and Percy.
+
+##### Applitools vs Percy
+
+This isn't an absolute comparison between both tools, so don't hold me accountable for my opinion. Its just comparison between both as per my use case. 
+
+__Applitools__ has this AI pixel diff logic they call _Visual AI_. That translates to lesser false positives. There are times where chrome renders vectors a little different between the two builds. Such instances are reported as a failed visual test in __Percy__. Next, __Applitools__ has been around since years. Its mature and has a rich ecosystem. Visual Tests are not the only thing they sell, they have dashboards, analytics, test management, funky UI. 
+
+__Percy__ is very focused. Just visual testing. And their visual diff flow resembles natural <a href="https://docs.percy.io/docs/baseline-picking-logic#section-the-full-details">git-flow</a> out of the box. While __Applitools__ roughly does that, you have to perform some extra steps to get this. I fall in love with Percy for this feature. 
+
+Both take DOM snapshots, upload it to their rendering engine in the cloud and then render the same DOM into multiple devices, browsers, etc. Woah! Read it again. Get it? If you wanna take a screenshot for Firefox, Chrome, 3 different width devices, you have to manage 2*3 = 6 WebDriver instance for every test. While it is not impossible, but it increases build time and flakiness tremendously. With this feature, in both options, visual tests run just once in local WebDriver instance and then get rendered in multiple devices in the cloud.
+
+__Applitools__ was very expensive compared to __Percy__. __Percy__'s price is flat, open and available on their pricing page. While I did get the best deal possible from __Applitools__ and I won't disclose their price since they don't want open and flat pricing. I'll respect their choice. But it was way more expensive. It may be justified with all the fancy beefed up eco-system they are providing, I did not require those things. I simply wanted a visual diff tool and hence I concluded with __Percy__.
+
+##### Doom's Day: Real Implementation
+
+At Springboard, we have separate backend and front end code repositories. While doing POC, I was running real backend in local machine and running __Percy__ tests. How do I run backend repo in CircleCI during front-end build? Argh! I have to mock Backend. How do I mock it? Which tool? Are there any ready-made tools doing this? 
+
+Wait, my front end repo is about the landing page. Its built with Angular. And my roommate who is Front End Engineer, told me there exist a thing called <a href="https://angular.io/api/common/http/HttpInterceptor">HttpInterceptor</a>. I taught myself what it does, took help from him and got a working mocked backend. Sweet. Then it took me some time to standardize folders, modularise, parameterize and it worked. Unfortunately, I spill over my deadline. I handed over an incomplete project to someone else and they took it forward. It was launched later.
+
+#### October 2019
+
+I still wanted to own a project end to end and get over my OCD of incomplete work from the previous project. And there were plenty of front end repositories around. This time I picked the one with dynamic UI. What does that mean? UI changes with change in Data. Like components disappear with an API response from a REST endpoint and are visible with a different response from the same REST endpoint. It's a different challenge to mock a dynamic app compared to a landing page. I would not be able to mock backend such that the same endpoint returns different responses when chosen from a Protractor test. 
+
+Found a tool <a href="https://github.com/mdasberg/ng-apimock">ngApiMock</a>. It allows exactly what I wanted. Control what response REST endpoint will return from a Protractor test using a plugin. I won't lie, it was hard integrating the plugin with Protractor. I didn't know javascript as much and I was confused a lot. A teammate helped, got me running with the plugin. Later I spent time understanding that entire piece of code and it made sense. Still convoluted. It took me time to explain it to other team mates for helping them scale up.
+
+From here it was easy. I ran all both front end and backend in local, inspected all endpoints, their responses, added them into my visual test code and ran my front end without any backend. I faced some async issues in writing protractor tests which I resolved with a bit of google and understanding how promises in JS work. 
+
+Awesome, what's next. There were four components in a single page: sidebar, content, header and footer. Both content and sidebar are individually scrollable. And we used floats and static CSS positioning. This led to major rendering issues during Visual tests. On reaching out to Percy support (which is awesome and super friendly, by the way!), they helped me understand cause and suggested that I modify development source code to use flexbox and sticky positioning in order to render this clean in Percy in all sizes. I decided to keep this in version 2.0 of this integration and release it without covering this page.
+
+#### March 2020
+
+I launched Version 0.1 for this integration and enabled merge checks in repositories after monitoring silently for 2 weeks. This will be a perpetual work, I will keep adding more test cases and scenarios on top of this base.
+
+#### My Takeaway
+
+- Visual testing is still a growing genre of test automation. 
+- It's interesting and challenging to implement and solve/integrate with the existing development workflow. 
+- It is fast to integrate visual tests in static web sites, landing pages, single-page websites.
+- If you choose to integrate visual tests with backend heavy web apps, mocking backend and setup around that will take significant time to setup.
+- Mocks have to be maintained with new features being added to front end and backend. Otherwise visual tests break.
