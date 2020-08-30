@@ -4,8 +4,8 @@
   </a>
 </p>
 <h1 align="center">
-  Voracious: My online web presence
+  Voracious: Product | Life | Growth Mindset
 </h1>
 
-[**Demo Website**](https://mohit-vora.netlify.com)
+[**Demo Website**](https://mohitv.dev)
 

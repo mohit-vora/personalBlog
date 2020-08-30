@@ -5,7 +5,7 @@ require(`dotenv`).config({
 module.exports = {
   siteMetadata: {
     siteTitle: `Voracious`,
-    siteTitleAlt: `Minimal Blog - Gatsby Theme`,
+    siteTitleAlt: `Product | Life | Growth Mindset`,
   },
   plugins: [
     {
