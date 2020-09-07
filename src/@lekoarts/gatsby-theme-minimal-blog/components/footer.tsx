@@ -1,7 +1,6 @@
 /** @jsx jsx */
 import { jsx, Styled } from "theme-ui"
 import useSiteMetadata from "@lekoarts/gatsby-theme-minimal-blog/src/hooks/use-site-metadata"
-// import useSiteMetadata from "@lekoarts/gatsby-theme-minimal-blog/hooks/use-site-metadata.tsx"
 
 const Footer = () => {
   const { siteTitle } = useSiteMetadata()
