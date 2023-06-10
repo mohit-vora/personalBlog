@@ -18,7 +18,7 @@
     "@babel/core": "^7.12.3",
     "@lekoarts/gatsby-theme-minimal-blog": "^2.2.4",
     "@mdx-js/mdx": "^1.6.18",
-    "gatsby": "^2.24.80",
+    "gatsby": "^4.25.7",
     "gatsby-plugin-manifest": "^2.2.3",
     "gatsby-plugin-mdx": "^1.2.47",
     "gatsby-plugin-netlify": "^2.1.3",
